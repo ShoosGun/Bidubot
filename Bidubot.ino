@@ -1,84 +1,52 @@
 #include <Arduino.h>
 #include <ServoEasing.hpp>
 
-#define pi 3.141592653589793
+class Leg
+{
+	public:
+	int x = 30 , y = -30 , z =  0; 
+	ServoEasing Mov[3];
+	int Sym[2];
+	void LegAttach(int pin[],int a, int b, int c)
+	{
+	Sym[0] = a; Sym[1] = b; Sym[2] = c;
+ 	Mov[0].attach(pin[0],90+x*a);
+ 	Mov[1].attach(pin[1],90+y*b);
+ 	Mov[2].attach(pin[2],60+z*c); 
+	}
+
+};
 // N  O  S  L  //
-ServoEasing NO[3];
-ServoEasing SO[3];
-ServoEasing NL[3];
-ServoEasing SL[3];
-
-int x,y,z;
-bool whave = false;
-
+Leg NO; Leg NL;
+Leg SL; Leg SO;
 void setup(){
-// 0 ==> Braço | 1 ==> Ombro | 2 ==> Joelho //
-   x = 30; //| 0---to---80 |// Maximum
-   y = -30;//| -50---to---50 |// Maximum
-   z = 0; //| 40--to---80 |// Maximum
+	//Put port definition in only one array
+static int a[]={53,29,8};
+static int b[]={49,25,12};
+static int c[]={17,21,45};
+static int d[]={4,33,37};
 
-   NO[0].attach(53);
-   NO[1].attach(29);
-   NO[2].attach(8);
-   NO[0].write(90-x);
-   NO[1].write(90-y);
-   NO[2].write(60-z);
-//
-   SO[0].attach(17); 
-   SO[1].attach(21); 
-   SO[2].attach(45);
-   SO[0].write(90-x);
-   SO[1].write(90-y); 
-   SO[2].write(60+z);
-//
-   NL[0].attach(49);
-   NL[1].attach(25);
-   NL[2].attach(12);
-   NL[0].write(90+x);
-   NL[1].write(90+y);
-   NL[2].write(60+z); // Má distribuição de peso 
-//   
-   SL[0].attach(4);
-   SL[1].attach(33);
-   SL[2].attach(37);
-   SL[0].write(90+x);
-   SL[1].write(90+y);
-   SL[2].write(60-z);
-//Group Manipulation
+NO.LegAttach(a,-1,-1,-1);
+
+NL.LegAttach(b,1,1,1);
+
+SO.LegAttach(c,-1,-1,1);
+
+SL.LegAttach(d,1,1,-1);
 
 }
-
 
 void loop()
 {
 
-Waving(SL,1);
-Waving(SO,-1);
-delay(5000);
-Waving(NL,-1);
-Waving(NO,1);
-delay(5000);
-
-
-Waving(NL,1);
-Waving(NO,-1);
-delay(5000);
-Waving(SL,-1);
-Waving(SO,1);
-delay(5000);
-
 }
 
-
-
-void Waving(ServoEasing LEG[],int al){
-
+void Waving(Leg& obj, int rot,int angle,int speed){
 	float a,b,c;
-        a = LEG[0].read(); 
-        b = LEG[1].read();
-	LEG[0].startEaseTo(a+25*al,40,START_UPDATE_BY_INTERRUPT);
-	LEG[1].startEaseTo(b-20*al,30,START_UPDATE_BY_INTERRUPT);
-
-
+        a = obj.Mov[0].read(); //Triangle Rule Implementation Needed
+        b = obj.Mov[1].read(); 
+        c = obj.Mov[2].read(); 
+	obj.Mov[0].startEaseTo(a+angle*obj.Sym[0]*rot, speed , START_UPDATE_BY_INTERRUPT);
+	obj.Mov[1].startEaseTo(b+(angle-10)*-1*obj.Sym[1]*rot, speed , START_UPDATE_BY_INTERRUPT);
+	//obj.Mov[2].startEaseTo(a+20*obj.Sym[2]*rot, 20 , START_UPDATE_BY_INTERRUPT);
 }
-
