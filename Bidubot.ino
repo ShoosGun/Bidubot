@@ -75,11 +75,6 @@ void Delegate(Leg& obj, int rot1,int rot2,int angle1,int angle2,int speed1,int s
         b = obj.Mov[1].read(); 
 	obj.Mov[0].startEaseTo(a+angle1*obj.Sym[0]*rot1, speed1 , START_UPDATE_BY_INTERRUPT);
 	obj.Mov[1].startEaseTo(b+angle2*obj.Sym[1]*rot2, speed2 , START_UPDATE_BY_INTERRUPT);
-	delay(400);
-        a = obj.Mov[0].read(); 
-        b = obj.Mov[1].read(); 
-	obj.Mov[1].startEaseTo(b+angle2*obj.Sym[1]*-rot2, speed2 , START_UPDATE_BY_INTERRUPT);
-	obj.Mov[0].startEaseTo(a+angle1*obj.Sym[0]*-rot1, speed1 , START_UPDATE_BY_INTERRUPT);
 }
 void Behavior(char a)
 {
